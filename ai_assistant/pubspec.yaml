@@ -43,8 +43,10 @@ dependencies:
   http: ^1.4.0
   animated_text_kit: ^4.2.3
   flutter_dotenv: ^5.2.1
-  dart_openai: ^5.1.0
   cached_network_image: ^3.4.1
+  convert: ^3.1.1
+  crypto: ^3.0.3
+  gallery_saver_plus: ^3.2.4
 
 dev_dependencies:
   flutter_test:
