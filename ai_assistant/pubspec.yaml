@@ -33,20 +33,42 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
+  #for iPhone Icons
   cupertino_icons: ^1.0.8
+
+  #for lottie animations
   lottie: ^3.3.1
+
+  #for hive database
   hive: ^4.0.0-dev.2
   isar_flutter_libs: ^4.0.0-dev.13
+
+  #to accessing storage path
   path_provider: ^2.1.0
+
+  #for state management
   get: ^4.7.1
+
+  #custom animation
   flutter_animate: ^4.5.2
-  http: ^1.4.0
   animated_text_kit: ^4.2.3
+
+  #for API calling
+  http: ^1.4.0
+  
+  #for AI image Generation
   flutter_dotenv: ^5.2.1
   cached_network_image: ^3.4.1
+
+  #to convert data types
   convert: ^3.1.1
   crypto: ^3.0.3
+
+  #to save generated image
   gallery_saver_plus: ^3.2.4
+
+  #to share image
+  share_plus: ^7.0.0
 
 dev_dependencies:
   flutter_test:

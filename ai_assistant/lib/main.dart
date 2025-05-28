@@ -5,10 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:hive/hive.dart';
-import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
-
 import 'helper/pref.dart';
 
 Future<void> main() async {
@@ -20,20 +16,7 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  await dotenv.load();
-  // Verify Hugging Face key
-  print('HF Key: ${dotenv.env['HUGGING_FACE_KEY']}');
-  
-  // Test API connectivity
-  try {
-    final response = await http.get(
-      Uri.parse('https://huggingface.co/api/whoami'),
-      headers: {'Authorization': 'Bearer ${dotenv.env['HUGGING_FACE_KEY']}'},
-    );
-    print('Account Info: ${response.body}');
-  } catch (e) {
-    print('Connection test failed: $e');
-  }
+  await dotenv.load(fileName: ".env");
   runApp(const MyApp());
 }
 
