@@ -1,100 +1,7 @@
-// import 'package:flutter/material.dart';
-// import 'package:speech_to_text/speech_to_text.dart';
-
-// class SpeechToTextFeature extends StatefulWidget {
-//   const SpeechToTextFeature({super.key});
-
-//   @override
-//   State<SpeechToTextFeature> createState() => _SpeechToTextFeatureState();
-// }
-
-// class _SpeechToTextFeatureState extends State<SpeechToTextFeature> {
-//   final SpeechToText _speechToText = SpeechToText();
-//   bool _speechEnabled = false;
-//   String _wordsSpoken = '';
-//   double _confidenceLevel = 0;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     initSpeech();
-//   }
-
-//   void initSpeech() async {
-//     _speechEnabled = await _speechToText.initialize();
-//     setState(() {});
-//   }
-
-//   void _startListening() async {
-//     await _speechToText.listen(onResult: _onSpeechResult);
-//     setState(() {
-//       _confidenceLevel = 0;
-//     });
-//   }
-
-//   void _stopListening() async {
-//     await _speechToText.stop();
-//     setState(() {});
-//   }
-
-//   void _onSpeechResult(result) {
-//     setState(() {
-//       _wordsSpoken = '${result.recognizedWords}';
-//       _confidenceLevel = result.confidence;
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: Text('Speech to Text')),
-//       body: Center(
-//         child: Column(
-//           children: [
-//             Container(
-//               padding: const EdgeInsets.all(16),
-//               child: Text(
-//                 _speechToText.isListening
-//                     ? 'Listening...'
-//                     : _speechEnabled
-//                     ? 'Tap the microphone to start listening...'
-//                     : 'Speech not available...',
-//                 style: const TextStyle(fontSize: 20),
-//               ),
-//             ),
-//             Expanded(
-//               child: Container(
-//                 padding: const EdgeInsets.all(16),
-//                 child: Text(
-//                   _wordsSpoken,
-//                   style: TextStyle(fontSize: 25, fontWeight: FontWeight.w300),
-//                 ),
-//               ),
-//             ),
-
-//             if (_speechToText.isNotListening && _confidenceLevel > 0)
-//               Padding(
-//                 padding: const EdgeInsets.only(bottom: 100),
-//                 child: Text(
-//                   'Confidence: ${(_confidenceLevel * 100).toStringAsFixed(1)}%',
-//                   style: TextStyle(fontSize: 30, fontWeight: FontWeight.w200),
-//                 ),
-//               ),
-//           ],
-//         ),
-//       ),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: _speechToText.isListening ? _stopListening : _startListening,
-
-//         backgroundColor: Colors.blue,
-//         foregroundColor: Colors.white,
-//         child: Icon(_speechToText.isNotListening ? Icons.mic_off : Icons.mic),
-//       ),
-//     );
-//   }
-// }
-
+import 'package:ai_assistant/helper/my_dialogs.dart';
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
@@ -110,7 +17,8 @@ class _SpeechToTextFeatureState extends State<SpeechToTextFeature> {
   bool _speechEnabled = false;
   String _wordsSpoken = '';
   double _confidenceLevel = 0;
-  bool _hasPermission = false;
+
+  bool _hasMicPermission = false;
   bool _showPermissionWarning = false;
 
   @override
@@ -121,44 +29,51 @@ class _SpeechToTextFeatureState extends State<SpeechToTextFeature> {
 
   Future<void> _checkInitialPermission() async {
     final status = await Permission.microphone.status;
+    print('Microphone permission status: $_hasMicPermission');
+
     setState(() {
-      _hasPermission = status.isGranted;
+      _hasMicPermission = status.isGranted;
       _showPermissionWarning = status.isDenied || status.isPermanentlyDenied;
     });
-    
-    if (_hasPermission) {
-      await initSpeech();
+    if (status.isGranted) {
+      _initializeSpeech();
     }
-  }
-
-  Future<void> initSpeech() async {
-    _speechEnabled = await _speechToText.initialize();
-    setState(() {});
   }
 
   Future<void> _requestPermission() async {
     final status = await Permission.microphone.request();
-    
-    setState(() {
-      _hasPermission = status.isGranted;
-      _showPermissionWarning = !status.isGranted;
-    });
+    print('Microphone permission status: $_hasMicPermission');
 
     if (status.isGranted) {
-      await initSpeech();
+      setState(() {
+        _hasMicPermission = true;
+        _showPermissionWarning = false;
+      });
+      _initializeSpeech();
+      _startListening(); // Automatically start listening after permission
     } else if (status.isPermanentlyDenied) {
-      // Open settings only if permanently denied
-      await openAppSettings();
+      openAppSettings(); // Opens system app settings
+    } else {
+      setState(() {
+        _showPermissionWarning = true;
+      });
     }
   }
 
-  Future<void> _startListening() async {
-    if (!_hasPermission) {
-      // Request permission only when user initiates action
+  Future<void> _initializeSpeech() async {
+    _speechEnabled = await _speechToText.initialize(
+      onStatus: (status) => print('Speech status: $status'),
+      onError: (error) => print('Speech error: $error'),
+    );
+    print('Speech initialized: $_speechEnabled');
+    setState(() {});
+  }
+
+  void _startListening() async {
+    if (!_hasMicPermission) {
       await _requestPermission();
-      if (!_hasPermission) return;
+      return;
     }
-    
     await _speechToText.listen(onResult: _onSpeechResult);
     setState(() {
       _confidenceLevel = 0;
@@ -172,7 +87,7 @@ class _SpeechToTextFeatureState extends State<SpeechToTextFeature> {
 
   void _onSpeechResult(result) {
     setState(() {
-      _wordsSpoken = '${result.recognizedWords}';
+      _wordsSpoken = result.recognizedWords;
       _confidenceLevel = result.confidence;
     });
   }
@@ -181,82 +96,90 @@ class _SpeechToTextFeatureState extends State<SpeechToTextFeature> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Speech to Text')),
-      body: Center(
-        child: Column(
-          children: [
-            // Permission warning banner - only show if permission was denied
-            if (_showPermissionWarning)
-              Container(
-                padding: const EdgeInsets.all(16),
-                color: Colors.amber[100],
-                child: Column(
-                  children: [
-                    const Text(
-                      'Microphone access required to use this feature',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: _requestPermission,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                      ),
-                      child: const Text('Grant Permission'),
-                    ),
-                  ],
-                ),
-              ),
-            
+      body: Column(
+        children: [
+          if (_showPermissionWarning)
             Container(
-              padding: const EdgeInsets.all(16),
+              color: Colors.redAccent,
+              padding: const EdgeInsets.all(12),
+              child: const Text(
+                'Microphone permission is required to use speech recognition.',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              _speechToText.isListening
+                  ? 'Listening...'
+                  : _speechEnabled
+                  ? 'Tap the button & start Speaking!'
+                  : 'Speech not available...',
+              style: const TextStyle(fontSize: 20),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              _wordsSpoken,
+              style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w300),
+            ),
+          ),
+          if (_speechToText.isNotListening && _confidenceLevel > 0)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 100),
               child: Text(
-                !_hasPermission
-                  ? 'Microphone permission needed'
-                  : _speechToText.isListening
-                    ? 'Listening...'
-                    : _speechEnabled
-                      ? 'Tap microphone to start'
-                      : 'Speech recognition unavailable',
-                style: const TextStyle(fontSize: 20),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  _wordsSpoken,
-                  style: const TextStyle(
-                    fontSize: 25, 
-                    fontWeight: FontWeight.w300
-                  ),
+                'Confidence: ${(_confidenceLevel * 100).toStringAsFixed(1)}%',
+                style: const TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w200,
                 ),
               ),
             ),
-            if (_speechToText.isNotListening && _confidenceLevel > 0)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 100),
-                child: Text(
-                  'Confidence: ${(_confidenceLevel * 100).toStringAsFixed(1)}%',
-                  style: const TextStyle(
-                    fontSize: 30, 
-                    fontWeight: FontWeight.w200
-                  ),
-                ),
+          const SizedBox(height: 30),
+          Center(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+              onPressed: () {
+                if (_wordsSpoken.trim().isNotEmpty) {
+                  Clipboard.setData(ClipboardData(text: _wordsSpoken));
+                  MyDialog.success('Successfully copied');
+                } else {
+                  MyDialog.error('Nothing to copy here');
+                }
+              },
+              child: const Text(
+                'copy text',
+                style: TextStyle(fontSize: 18, color: Colors.white),
               ),
-          ],
-        ),
+            ),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _speechToText.isListening ? _stopListening : _startListening,
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-        child: Icon(
-          !_hasPermission 
-            ? Icons.mic_off 
-            : _speechToText.isNotListening 
-                ? Icons.mic 
-                : Icons.stop
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: AvatarGlow(
+        animate: _speechToText.isListening,
+        glowColor: Colors.blue,
+        duration: const Duration(milliseconds: 1000),
+        repeat: true,
+        child: GestureDetector(
+          onTapDown: (_) {
+            _startListening();
+          },
+          onTapUp: (_) {
+            _stopListening();
+          },
+          onTapCancel: () {
+            _stopListening();
+          },
+          child: FloatingActionButton(
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            onPressed: () {},
+            child: Icon(
+              _speechToText.isNotListening ? Icons.mic_none : Icons.mic,
+            ),
+          ),
         ),
       ),
     );

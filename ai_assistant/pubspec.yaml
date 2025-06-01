@@ -73,8 +73,13 @@ dependencies:
   #to enable speech to text
   speech_to_text: ^7.0.0
 
+  #to copy text
+  clipboard: ^0.1.3
+
+  avatar_glow: ^3.0.1
+
   # for permission
-  permission_handler: ^10.4.0
+  permission_handler: ^12.0.0+1
 
 dev_dependencies:
   flutter_test:
