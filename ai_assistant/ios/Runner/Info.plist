@@ -22,6 +22,10 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Permission required to record audio for speech recognition</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Permission required to record audio for speech recognition</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

@@ -6,7 +6,6 @@ import 'package:ai_assistant/screen/feature/translate_feature.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/snackbar/snackbar.dart';
 
 ///speech to text OCR remaining to be added
 enum HomeType { aiChatBot, aiImage, aiTranslator, speechToText, ocr }
@@ -49,7 +48,7 @@ extension MyHomeType on HomeType {
   };
 
   ///for onTap navigation
-  VoidCallback get OnTap => switch (this) {
+  VoidCallback get onTap => switch (this) {
     HomeType.aiChatBot => () => Get.to(() => ChatbotFeature()),
     HomeType.aiImage => () => Get.to(() => ImageFeature()),
     HomeType.aiTranslator => () => Get.to(() => TranslatorFeature()),

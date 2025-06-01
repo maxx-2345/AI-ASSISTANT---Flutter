@@ -20,7 +20,7 @@ class HomeCard extends StatelessWidget {
       color: Colors.blue.withAlpha((0.2 * 255).round()),
       child: InkWell(
         borderRadius: BorderRadius.all(Radius.circular(20)),
-        onTap: homeType.OnTap,
+        onTap: homeType.onTap,
         child:
             homeType.leftAlign
                 ? Row(

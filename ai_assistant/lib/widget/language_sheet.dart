@@ -2,8 +2,6 @@ import 'package:ai_assistant/controller/translate_controller.dart';
 import 'package:ai_assistant/helper/global.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:get/state_manager.dart';
 
 class LanguageSheet extends StatefulWidget {
   final TranslateController c;

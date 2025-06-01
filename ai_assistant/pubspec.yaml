@@ -70,6 +70,12 @@ dependencies:
   #to share image
   share_plus: ^7.0.0
 
+  #to enable speech to text
+  speech_to_text: ^7.0.0
+
+  # for permission
+  permission_handler: ^10.4.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

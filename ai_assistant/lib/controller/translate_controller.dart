@@ -1,3 +1,6 @@
+import 'package:ai_assistant/apis/apis.dart';
+import 'package:ai_assistant/controller/image_controller.dart';
+import 'package:ai_assistant/helper/my_dialogs.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
@@ -6,6 +9,8 @@ class TranslateController extends GetxController {
   final resultC = TextEditingController();
 
   final from = ''.obs, to = ''.obs;
+
+  final status = Status.none.obs;
   // list of languages
   final lang = const [
     "Afar",
@@ -192,8 +197,39 @@ class TranslateController extends GetxController {
     "Zulu",
   ];
 
-  Future<void> askQuestion() async {
-    if (textC.text.trim().isNotEmpty) {
-    } else {}
+  Future<void> translate() async {
+    if (textC.text.trim().isNotEmpty && to.isNotEmpty) {
+      status.value = Status.loading;
+      String prompt = '';
+      if (from.isNotEmpty) {
+        prompt =
+            "Can you translate given text from ${from.value} to ${to.value} just give it's meaning and nothing else:\n${textC.text}";
+      } else {
+        prompt =
+            "Can you translate given text to ${to.value} just give it's meaning and nothing else:\n${textC.text}";
+      }
+      print('Prompt: $prompt');
+
+      final res = await APIs.getAnswer(prompt);
+      resultC.text = res;
+      print('Response: $res');
+      // utf8.decode(res.codeUnits);
+      status.value = Status.complete;
+    } else {
+      status.value = Status.none;
+      if (to.isEmpty) MyDialog.info('Select To language');
+
+      if (textC.text.isEmpty) MyDialog.error('Type Something');
+    }
+  }
+
+  void swapLanguage() {
+    if (to.isNotEmpty && from.isNotEmpty) {
+      final t = to.value;
+      to.value = from.value;
+      from.value = t;
+    } else {
+      MyDialog.info('Select swapping languages!');
+    }
   }
 }

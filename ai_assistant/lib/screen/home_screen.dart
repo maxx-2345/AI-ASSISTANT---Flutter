@@ -1,11 +1,9 @@
-import 'package:ai_assistant/apis/apis.dart';
 import 'package:ai_assistant/helper/global.dart';
 import 'package:ai_assistant/helper/pref.dart';
 import 'package:ai_assistant/model/home_type.dart';
 import 'package:ai_assistant/widget/home_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
