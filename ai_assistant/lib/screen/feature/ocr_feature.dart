@@ -154,6 +154,7 @@ class _OcrFeatureState extends State<OcrFeature> {
       return const Center(child: Text('No result'));
     }
     return FutureBuilder(
+      key: ValueKey(_image?.path),
       future: _extractText(_image!),
       builder: (context, snapshot) {
         return SingleChildScrollView(
@@ -167,21 +168,6 @@ class _OcrFeatureState extends State<OcrFeature> {
       },
     );
   }
-
-  // Future<String?> _extractText(File file) async {
-  //   final InputImage inputImage = InputImage.fromFile(file);
-
-  //   // Try Latin script first
-  //   final latinRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-  //   final latinText = await latinRecognizer.processImage(inputImage);
-  //   latinRecognizer.close();
-
-  //   if (latinText.text.trim().isNotEmpty) {
-  //     setState(() => copyText = latinText.text);
-  //     return latinText.text;
-  //   }
-
-  // }
 
   Future<String> _extractText(File file) async {
     final inputImage = InputImage.fromFile(file);
@@ -203,10 +189,20 @@ class _OcrFeatureState extends State<OcrFeature> {
       await recognizer.close();
     }
 
+    // Remove duplicate lines
+    final lines =
+        combinedText
+            .split('\n')
+            .map((line) => line.trim())
+            .where((line) => line.isNotEmpty)
+            .toSet(); // removes duplicates
+
+    final finalText = lines.join('\n');
+
     setState(() {
       copyText = combinedText;
     });
 
-    return combinedText.trim();
+    return finalText;
   }
 }
