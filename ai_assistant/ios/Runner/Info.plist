@@ -22,6 +22,10 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>NSCameraUsageDescription</key>
+    <string>Need camera access to take pictures for extracting the text</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>Need library access to pick images</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Permission required to record audio for speech recognition</string>
 	<key>NSMicrophoneUsageDescription</key>

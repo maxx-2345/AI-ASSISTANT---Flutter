@@ -81,6 +81,12 @@ dependencies:
   # for permission
   permission_handler: ^12.0.0+1
 
+  #for text extraction
+  google_mlkit_text_recognition: ^0.15.0
+
+  #for image picking from camera
+  image_picker: ^1.1.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

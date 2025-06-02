@@ -39,17 +39,17 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.blue,
           ),
         ),
-        actions: [
-          IconButton(
-            padding: const EdgeInsets.only(right: 10),
-            onPressed: () {},
-            icon: const Icon(
-              Icons.brightness_4_rounded,
-              color: Colors.blue,
-              size: 26,
-            ),
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     padding: const EdgeInsets.only(right: 10),
+        //     onPressed: () {},
+        //     icon: const Icon(
+        //       Icons.brightness_4_rounded,
+        //       color: Colors.blue,
+        //       size: 26,
+        //     ),
+        //   ),
+        // ],
       ),
       body: ListView(
         padding: EdgeInsets.symmetric(
